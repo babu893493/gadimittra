@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GaadiMitra - 6 Jila Gaadi Booking</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+body{font-family:'Poppins',sans-serif;background:#f5f5f5}
+.brand-yellow{background:#FFCC00}
+.scroll-hide::-webkit-scrollbar{display:none}
+</style>
+</head>
+<body class="pb-24">
+
+<div class="bg-white p-4 sticky top-0 z-40 shadow-sm flex justify-between items-center">
+<div>
+<p class="text-[11px] text-gray-500">📍 Ballia | Mau | Ghazipur | Varanasi | Azamgarh | Prayagraj</p>
+<h1 class="font-bold text-sm">GaadiMitra <span class="bg-yellow-400 px-2 py-0.5 rounded text-[10px]">6 JILA</span></h1>
+</div>
+<div class="flex gap-2">
+<button onclick="openPostModal()" class="bg-yellow-400 text-black px-3 py-2 rounded-full text-xs font-bold"><i class="fas fa-plus"></i> Gadi Post</button>
+<button onclick="openAdmin()" class="bg-black text-white w-9 h-9 rounded-full text-xs"><i class="fas fa-lock"></i></button>
+</div>
+</div>
+
+<div class="m-3 rounded-2xl overflow-hidden shadow-sm bg-white">
+<div class="flex justify-between items-center p-3">
+<p class="font-bold text-sm"><i class="fas fa-map-location-dot text-green-600"></i> Live Map</p>
+<button onclick="getCurrentLocation()" class="bg-black text-white px-3 py-1 rounded-full text-[10px]"><i class="fas fa-crosshairs"></i> My Location</button>
+</div>
+<iframe id="googleMap" width="100%" height="230" style="border:0" loading="lazy" allowfullscreen src="https://www.google.com/maps?q=Ballia,Uttar+Pradesh&z=11&output=embed"></iframe>
+<div class="p-2 flex gap-2 overflow-x-auto scroll-hide">
+<button onclick="setMap('Ballia')" class="bg-gray-100 px-3 py-1 rounded-full text-xs">Ballia</button>
+<button onclick="setMap('Mau')" class="bg-gray-100 px-3 py-1 rounded-full text-xs">Mau</button>
+<button onclick="setMap('Ghazipur')" class="bg-gray-100 px-3 py-1 rounded-full text-xs">Ghazipur</button>
+<button onclick="setMap('Varanasi')" class="bg-gray-100 px-3 py-1 rounded-full text-xs">Varanasi</button>
+<button onclick="setMap('Azamgarh')" class="bg-gray-100 px-3 py-1 rounded-full text-xs">Azamgarh</button>
+<button onclick="setMap('Prayagraj')" class="bg-gray-100 px-3 py-1 rounded-full text-xs">Prayagraj</button>
+</div>
+</div>
+
+<div class="bg-white p-4 m-3 rounded-2xl shadow-sm">
+<p class="font-bold text-sm mb-3">📍 Pickup Kaha Se? Drop Kaha Tak?</p>
+<div class="flex gap-3">
+<div class="flex flex-col items-center mt-2"><div class="w-3 h-3 bg-green-500 rounded-full"></div><div class="w-0.5 h-14 bg-gray-400 border-dashed"></div><div class="w-3 h-3 bg-red-500 rounded-full"></div></div>
+<div class="flex-1 space-y-3">
+<div class="relative"><input id="fromLoc" placeholder="Pickup - Kaha Se Uthana Hai?" class="w-full border p-3 rounded-xl text-sm pr-10 outline-none"><button onclick="openGoogleMapPicker('from')" class="absolute right-2 top-2 bg-yellow-400 w-8 h-8 rounded-full text-xs"><i class="fas fa-map"></i></button></div>
+<div class="relative"><input id="toLoc" placeholder="Drop - Kaha Chhodna Hai?" class="w-full border p-3 rounded-xl text-sm pr-10 outline-none"><button onclick="openGoogleMapPicker('to')" class="absolute right-2 top-2 bg-black text-white w-8 h-8 rounded-full text-xs"><i class="fas fa-map"></i></button></div>
+</div>
+</div>
+<div class="flex gap-2 mt-4">
+<button onclick="search()" class="flex-1 brand-yellow font-bold py-3 rounded-xl text-sm">Gaadi Dhoondo</button>
+<button onclick="showRouteOnMap()" class="flex-1 bg-black text-white font-bold py-3 rounded-xl text-sm"><i class="fas fa-route"></i> Map Pe Dekho</button>
+</div>
+</div>
+
+<div class="bg-white p-3 mx-3 rounded-2xl shadow-sm">
+<p class="font-bold text-sm mb-2">Sawaari Chuno</p>
+<div class="flex gap-2 overflow-x-auto scroll-hide pb-1">
+<button onclick="filterType('all')" class="flex flex-col items-center bg-yellow-400 p-3 rounded-xl min-w-[70px]"><span class="text-xl">🚖</span><span class="text-[10px] font-bold">All</span></button>
+<button onclick="filterType('Auto')" class="flex flex-col items-center bg-gray-100 p-3 rounded-xl min-w-[70px]"><span class="text-xl">🛺</span><span class="text-[10px] font-bold">Auto</span></button>
+<button onclick="filterType('Bike')" class="flex flex-col items-center bg-gray-100 p-3 rounded-xl min-w-[70px]"><span class="text-xl">🏍️</span><span class="text-[10px] font-bold">Bike</span></button>
+<button onclick="filterType('Bolero')" class="flex flex-col items-center bg-gray-100 p-3 rounded-xl min-w-[70px]"><span class="text-xl">🚙</span><span class="text-[10px] font-bold">Bolero</span></button>
+<button onclick="filterType('Scorpio')" class="flex flex-col items-center bg-gray-100 p-3 rounded-xl min-w-[70px]"><span class="text-xl">🚘</span><span class="text-[10px] font-bold">Scorpio</span></button>
+<button onclick="filterType('Traveller')" class="flex flex-col items-center bg-gray-100 p-3 rounded-xl min-w-[70px]"><span class="text-xl">🚌</span><span class="text-[10px] font-bold">Bus</span></button>
+</div>
+</div>
+
+<div class="flex gap-2 overflow-x-auto scroll-hide px-3 mt-3">
+<button onclick="filterCity('all')" class="bg-black text-white px-4 py-2 rounded-full text-xs">All 6 Jila</button>
+<button onclick="filterCity('Ballia')" class="bg-white border px-4 py-2 rounded-full text-xs">Ballia</button>
+<button onclick="filterCity('Mau')" class="bg-white border px-4 py-2 rounded-full text-xs">Mau</button>
+<button onclick="filterCity('Ghazipur')" class="bg-white border px-4 py-2 rounded-full text-xs">Ghazipur</button>
+<button onclick="filterCity('Varanasi')" class="bg-white border px-4 py-2 rounded-full text-xs">Varanasi</button>
+<button onclick="filterCity('Azamgarh')" class="bg-white border px-4 py-2 rounded-full text-xs">Azamgarh</button>
+<button onclick="filterCity('Prayagraj')" class="bg-white border px-4 py-2 rounded-full text-xs">Prayagraj</button>
+</div>
+
+<div id="gadiGrid" class="p-3 space-y-3"></div>
+
+<div id="postModal" class="hidden fixed inset-0 bg-black/60 flex items-end z-50">
+<div class="bg-white w-full rounded-t-3xl p-5 max-h-[90vh] overflow-auto">
+<div class="flex justify-between"><h3 class="font-bold">🚖 Apni Gadi Post Karo</h3><button onclick="closePostModal()" class="bg-gray-100 w-8 h-8 rounded-full"><i class="fas fa-times"></i></button></div>
+<input id="dName" placeholder="Driver Naam *" class="w-full border p-3 rounded-xl mt-3 text-sm">
+<input id="dPhone" placeholder="Mobile *" class="w-full border p-3 rounded-xl mt-2 text-sm">
+<div class="flex gap-2 mt-2"><select id="dCity" class="w-1/2 border p-3 rounded-xl text-sm"><option>Ballia</option><option>Mau</option><option>Ghazipur</option><option>Varanasi</option><option>Azamgarh</option><option>Prayagraj</option></select><select id="dType" class="w-1/2 border p-3 rounded-xl text-sm"><option>Bolero</option><option>Scorpio</option><option>Auto</option><option>Bike</option><option>Traveller</option><option>Innova</option></select></div>
+<input id="dRate" placeholder="Rate Per KM" class="w-full border p-3 rounded-xl mt-2 text-sm">
+<input id="dLoc" placeholder="📍 Gadi Kaha Khadi Hai?" class="w-full border p-3 rounded-xl mt-2 text-sm">
+<input id="dMapLink" placeholder="Google Map Link (Optional)" class="w-full border p-3 rounded-xl mt-2 text-sm">
+<button onclick="addDriverPending()" class="w-full bg-yellow-400 font-bold p-3 rounded-xl mt-4">Request Bhejo</button>
+</div>
+</div>
+
+<div id="adminPanel" class="hidden fixed inset-0 bg-white z-[60] p-4 overflow-auto">
+<div class="flex justify-between"><h3 class="font-bold">🔐 Admin Control</h3><button onclick="closeAdminPanel()" class="bg-gray-100 px-3 py-1 rounded-full text-xs">X</button></div>
+<div class="bg-yellow-100 border-2 border-yellow-400 p-3 rounded-xl mt-4"><p class="font-bold text-sm">⏳ Pending - <span id="pendingCount">0</span></p></div>
+<div id="pendingList" class="mt-3 space-y-2"></div>
+<div class="bg-green-100 border-2 border-green-400 p-3 rounded-xl mt-6"><p class="font-bold text-sm">✅ Live - <span id="liveCount">0</span></p></div>
+<div id="liveList" class="mt-3 space-y-2"></div>
+<button onclick="logout()" class="w-full bg-black text-white p-3 rounded-xl mt-6 text-sm">Logout</button>
+</div>
+
+<div id="loginModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-[70] p-4">
+<div class="bg-white p-6 rounded-2xl w-full max-w-sm"><h3 class="font-bold">Admin Login</h3><input id="adminPass" type="password" placeholder="Password" class="w-full border p-3 rounded-xl mt-3"><button onclick="checkLogin()" class="w-full brand-yellow font-bold p-3 rounded-xl mt-3">Login</button><button onclick="closeLogin()" class="w-full bg-gray-100 p-2 rounded-xl mt-2 text-sm">Band</button></div>
+</div>
+
+<script>
+const ADMIN_PASSWORD="ballia123";
+let defaultGadi=[
+{city:'Ballia',type:'Bolero',name:'Ramesh Mitra',phone:'9999999991',rate:'12',loc:'Ballia Bus Stand',icon:'🚙',map:'https://maps.google.com/?q=Ballia+Bus+Stand',time:'2 min'},
+{city:'Mau',type:'Scorpio',name:'Anil Mitra',phone:'9999999992',rate:'15',loc:'Mau City',icon:'🚘',map:'https://maps.google.com/?q=Mau+City',time:'5 min'},
+{city:'Ghazipur',type:'Auto',name:'Sunil Mitra',phone:'9999999993',rate:'8',loc:'Ghazipur Station',icon:'🛺',map:'https://maps.google.com/?q=Ghazipur+Station',time:'1 min'},
+{city:'Varanasi',type:'Auto',name:'Vikash Mitra',phone:'9999999994',rate:'10',loc:'Varanasi Cantt',icon:'🛺',map:'https://maps.google.com/?q=Varanasi+Cantt',time:'3 min'},
+{city:'Azamgarh',type:'Bike',name:'Pappu Mitra',phone:'9999999995',rate:'6',loc:'Azamgarh Bus Stand',icon:'🏍️',map:'https://maps.google.com/?q=Azamgarh+Bus+Stand',time:'2 min'},
+{city:'Prayagraj',type:'Traveller',name:'Raju Mitra',phone:'9999999996',rate:'22',loc:'Prayagraj Sangam',icon:'🚌',map:'https://maps.google.com/?q=Prayagraj+Sangam',time:'8 min'},
+];
+function getApproved(){return JSON.parse(localStorage.getItem('approvedGaadi')||'[]');}
+function getPending(){return JSON.parse(localStorage.getItem('pendingGaadi')||'[]');}
+function getBlocked(){return JSON.parse(localStorage.getItem('blockedPhones')||'[]');}
+function setMap(city){document.getElementById('googleMap').src=`https://www.google.com/maps?q=${city},Uttar+Pradesh&z=12&output=embed`;}
+function showRouteOnMap(){let from=fromLoc.value||'Ballia', to=toLoc.value||'Varanasi'; document.getElementById('googleMap').src=`https://www.google.com/maps?q=${encodeURIComponent(from)}+to+${encodeURIComponent(to)}&z=11&output=embed`; window.open(`https://www.google.com/maps/dir/${encodeURIComponent(from)}/${encodeURIComponent(to)}/`,'_blank');}
+function getCurrentLocation(){if(navigator.geolocation){navigator.geolocation.getCurrentPosition(p=>{let lat=p.coords.latitude,lng=p.coords.longitude; document.getElementById('googleMap').src=`https://www.google.com/maps?q=${lat},${lng}&z=15&output=embed`; fromLoc.value=`My Location ${lat.toFixed(4)},${lng.toFixed(4)}`;});}}
+function openGoogleMapPicker(type){let q=prompt(type==='from'?'Pickup location likho:':'Drop location likho:'); if(q){if(type==='from') fromLoc.value=q; else toLoc.value=q; document.getElementById('googleMap').src=`https://www.google.com/maps?q=${encodeURIComponent(q)}&z=14&output=embed`;}}
+function loadGadi(){
+ let blocked=getBlocked(), approved=getApproved();
+ let all=[...approved, ...defaultGadi].filter(g=>!blocked.includes(g.phone));
+ let grid=document.getElementById('gadiGrid'); grid.innerHTML='';
+ all.forEach(g=>{
+   grid.innerHTML+=`<div class="gadi-card bg-white rounded-2xl p-4 shadow-sm" data-city="${g.city}" data-type="${g.type}"><div class="flex justify-between"><div class="flex gap-3"><div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center text-xl">${g.icon}</div><div><h3 class="font-bold text-sm">${g.type} - ${g.city} <span class="text-gray-400 text-xs">• ${g.time}</span></h3><p class="text-[11px] text-gray-500">📍 ${g.loc} | ₹${g.rate}/km | ${g.name}</p><a href="${g.map}" target="_blank" class="text-[10px] text-blue-600"><i class="fas fa-map"></i> Map Pe Dekho</a></div></div><button onclick="book('${g.type} ${g.city}','${g.phone}')" class="bg-black text-white px-4 py-2 rounded-full text-xs font-bold h-fit">Book</button></div><div class="flex gap-2 mt-3"><button onclick="window.open('tel:+91${g.phone}')" class="flex-1 bg-gray-100 py-2 rounded-full text-xs"><i class="fas fa-phone"></i> Call</button><button onclick="window.open('${g.map}')" class="flex-1 bg-yellow-400 py-2 rounded-full text-xs font-bold"><i class="fas fa-location-dot"></i> Location</button></div></div>`;
+ });
+ document.getElementById('pendingCount').innerText=getPending().length;
+ document.getElementById('liveCount').innerText=all.length;
+ document.getElementById('pendingList').innerHTML=getPending().map((g,i)=>`<div class="border-2 border-yellow-400 p-3 rounded-xl text-xs"><b>${g.type}-${g.city}</b> ${g.name} (${g.phone})<br>📍 ${g.loc}<div class="flex gap-2 mt-2"><button onclick="approveGadi(${i})" class="bg-green-600 text-white px-4 py-2 rounded-full flex-1">✅ Approve</button><button onclick="rejectGadi(${i})" class="bg-red-600 text-white px-4 py-2 rounded-full flex-1">❌ Reject</button></div></div>`).join('')||'<p class="text-xs text-gray-400 p-3 bg-gray-50 rounded-xl">Koi pending nahi</p>';
+ document.getElementById('liveList').innerHTML=all.map(g=>`<div class="flex justify-between bg-gray-50 p-3 rounded-xl text-xs"><span>${g.type}-${g.city}-${g.name}</span><button onclick="deleteLiveByPhone('${g.phone}')" class="bg-red-600 text-white px-2 py-1 rounded">Delete</button></div>`).join('');
+}
+function openPostModal(){postModal.classList.remove('hidden');}
+function closePostModal(){postModal.classList.add('hidden');}
+function openAdmin(){loginModal.classList.remove('hidden');}
+function closeLogin(){loginModal.classList.add('hidden');}
+function closeAdminPanel(){adminPanel.classList.add('hidden');}
+function checkLogin(){if(adminPass.value===ADMIN_PASSWORD){localStorage.setItem('isGaadiMitraAdmin','true'); closeLogin(); adminPanel.classList.remove('hidden'); loadGadi();} else alert('Galat');}
+function logout(){localStorage.removeItem('isGaadiMitraAdmin'); closeAdminPanel();}
+function addDriverPending(){let n=dName.value.trim(), p=dPhone.value.trim(), c=dCity.value, t=dType.value, r=dRate.value||'12', l=dLoc.value||c, m=dMapLink.value||`https://maps.google.com/?q=${encodeURIComponent(l)}`; if(!n||!p){alert('Naam Mobile bharo');return;} let pending=getPending(); pending.unshift({city:c,type:t,name:n,phone:p,rate:r,loc:l,icon:'🚙',map:m,time:'Abhi'}); localStorage.setItem('pendingGaadi',JSON.stringify(pending)); dName.value=''; dPhone.value=''; dRate.value=''; dLoc.value=''; dMapLink.value=''; closePostModal(); loadGadi(); alert('Request Admin ko gayi');}
+function approveGadi(i){let pending=getPending(), approved=getApproved(); approved.unshift(pending[i]); pending.splice(i,1); localStorage.setItem('pendingGaadi',JSON.stringify(pending)); localStorage.setItem('approvedGaadi',JSON.stringify(approved)); loadGadi();}
+function rejectGadi(i){let pending=getPending(); pending.splice(i,1); localStorage.setItem('pendingGaadi',JSON.stringify(pending)); loadGadi();}
+function deleteLiveByPhone(phone){if(!confirm('Delete karna hai?'))return; let approved=getApproved().filter(x=>x.phone!==phone); localStorage.setItem('approvedGaadi',JSON.stringify(approved)); let b=getBlocked(); if(defaultGadi.find(x=>x.phone===phone)&&!b.includes(phone)){b.push(phone); localStorage.setItem('blockedPhones',JSON.stringify(b));} loadGadi();}
+function book(g,p){let f=fromLoc.value||'Pickup', t=toLoc.value||'Drop'; window.open(`https://wa.me/91${p}?text=${encodeURIComponent(`GaadiMitra Booking\nGaadi: ${g}\nPickup: ${f}\nDrop: ${t}\nMap: https://www.google.com/maps/dir/${encodeURIComponent(f)}/${encodeURIComponent(t)}/`)}`,'_blank')}
+function filterCity(c){document.querySelectorAll('.gadi-card').forEach(x=>x.style.display=(c==='all'||x.dataset.city===c)?'':'none')}
+function filterType(t){document.querySelectorAll('.gadi-card').forEach(x=>x.style.display=(t==='all'||x.dataset.type===t)?'':'none')}
+function search(){showRouteOnMap()}
+loadGadi();
+</script>
+</body>
+</html>

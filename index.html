@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GaadiMitra - 6 Jila Ka Apna Gaadi Wala Mitra</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50">
+<header class="bg-green-600 p-3 flex justify-between sticky top-0 z-50 text-white">
+<h1 class="font-bold text-sm">🤝 GaadiMitra</h1>
+<div class="flex gap-1">
+<span class="text-[9px] bg-white text-green-700 px-2 py-1 rounded-full">Ballia | Mau | Ghazipur | Varanasi | Azamgarh | Prayagraj</span>
+<button onclick="openAdmin()" class="bg-black text-white px-2 py-1 rounded-full text-[10px]">🔐 Admin</button>
+</div>
+</header>
+
+<section class="bg-gradient-to-r from-green-700 to-green-500 text-white p-5 text-center">
+<h2 class="font-bold text-lg">GaadiMitra - 6 Jila Ka Mitra</h2>
+<p class="text-xs opacity-90 mt-1">Ballia Se Prayagraj Tak - Bhada Pe Gaadi 24 Ghanta</p>
+<div class="bg-white rounded-xl p-2 flex gap-1 mt-3 max-w-md mx-auto">
+<input id="fromLoc" placeholder="Kaha Se?" class="flex-1 text-black text-xs p-2 outline-none">
+<input id="toLoc" placeholder="Kaha Tak?" class="flex-1 text-black text-xs p-2 outline-none">
+<button onclick="search()" class="bg-green-600 text-white px-4 py-2 rounded-lg font-bold text-xs">Mitra Dhoondo</button>
+</div>
+</section>
+
+<div class="max-w-6xl mx-auto p-2 flex gap-1 text-[10px] overflow-x-auto">
+<button onclick="filterCity('all')" class="bg-green-600 text-white px-3 py-1 rounded-full">All 6 Jila</button>
+<button onclick="filterCity('Ballia')" class="bg-white border px-3 py-1 rounded-full">Ballia</button>
+<button onclick="filterCity('Mau')" class="bg-white border px-3 py-1 rounded-full">Mau</button>
+<button onclick="filterCity('Ghazipur')" class="bg-white border px-3 py-1 rounded-full">Ghazipur</button>
+<button onclick="filterCity('Varanasi')" class="bg-white border px-3 py-1 rounded-full">Varanasi</button>
+<button onclick="filterCity('Azamgarh')" class="bg-white border px-3 py-1 rounded-full">Azamgarh</button>
+<button onclick="filterCity('Prayagraj')" class="bg-white border px-3 py-1 rounded-full">Prayagraj</button>
+</div>
+
+<section id="gadiGrid" class="max-w-6xl mx-auto p-3 grid grid-cols-1 md:grid-cols-3 gap-3"></section>
+
+<section id="adminPanel" class="hidden max-w-xl mx-auto bg-white p-5 rounded-xl shadow m-4 border-2 border-green-600">
+<h3 class="font-bold text-green-700">✅ GaadiMitra Admin - Only You</h3>
+<input id="dName" placeholder="Driver Ka Naam" class="w-full border p-2 rounded mt-3 text-sm">
+<input id="dPhone" placeholder="Mobile Number" class="w-full border p-2 rounded mt-2 text-sm">
+<div class="flex gap-2 mt-2">
+<select id="dCity" class="w-1/2 border p-2 rounded text-sm"><option>Ballia</option><option>Mau</option><option>Ghazipur</option><option>Varanasi</option><option>Azamgarh</option><option>Prayagraj</option></select>
+<select id="dType" class="w-1/2 border p-2 rounded text-sm"><option>Bolero</option><option>Scorpio</option><option>Innova</option><option>Auto</option><option>E-Rickshaw</option><option>Traveller</option></select>
+</div>
+<input id="dRate" placeholder="Rate Per KM" class="w-full border p-2 rounded mt-2 text-sm">
+<input id="dLoc" placeholder="Location" class="w-full border p-2 rounded mt-2 text-sm">
+<button onclick="addDriver()" class="w-full bg-green-600 text-white font-bold p-3 rounded-lg mt-3">➕ GaadiMitra Me Jodo</button>
+<div id="adminList" class="mt-4"></div>
+</section>
+
+<div id="loginModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+<div class="bg-white p-6 rounded-xl w-full max-w-sm">
+<h3 class="font-bold">🔐 GaadiMitra Admin</h3>
+<input id="adminPass" type="password" placeholder="Password" class="w-full border p-3 rounded-lg mt-3">
+<button onclick="checkLogin()" class="w-full bg-green-600 text-white font-bold p-3 rounded-lg mt-3">Login</button>
+<button onclick="closeAdmin()" class="w-full bg-gray-100 p-2 rounded mt-2 text-sm">Band</button>
+<p class="text-[10px] text-center text-gray-400 mt-2">Default: ballia123</p>
+</div>
+</div>
+
+<script>
+const ADMIN_PASSWORD = "ballia123";
+let isAdmin = localStorage.getItem('isGaadiMitraAdmin')==='true';
+let defaultGadi = [
+{city:'Ballia',type:'Bolero',name:'Ramesh - Ballia',phone:'9999999991',rate:'12',loc:'Ballia Bus Stand'},
+{city:'Mau',type:'Scorpio',name:'Anil - Mau',phone:'9999999992',rate:'15',loc:'Mau City'},
+{city:'Ghazipur',type:'Auto',name:'Sunil - Ghazipur',phone:'9999999993',rate:'8',loc:'Ghazipur Station'},
+{city:'Varanasi',type:'Innova',name:'Vikash - Varanasi',phone:'9999999994',rate:'18',loc:'Varanasi Cantt'},
+{city:'Azamgarh',type:'Bolero',name:'Pappu - Azamgarh',phone:'9999999995',rate:'13',loc:'Azamgarh'},
+{city:'Prayagraj',type:'Traveller',name:'Raju - Prayagraj',phone:'9999999996',rate:'22',loc:'Prayagraj Sangam'},
+];
+function loadGadi(){
+ let saved = JSON.parse(localStorage.getItem('gaadiMitraData')||'[]');
+ let all = [...saved, ...defaultGadi];
+ let grid=document.getElementById('gadiGrid');
+ grid.innerHTML='';
+ all.forEach((g,i)=>{
+   let canDelete = isAdmin && i < saved.length;
+   grid.innerHTML+=`<div class="gadi-card bg-white rounded-xl shadow p-4 border-l-4 border-green-600" data-city="${g.city}">
+    <h3 class="font-bold text-sm">${g.type} - ${g.city}</h3>
+    <p class="text-xs text-gray-600 mt-1">📍 ${g.loc} | 👨 ${g.name} | ₹${g.rate}/km</p>
+    <div class="flex gap-2 mt-3">
+      <button onclick="book('${g.type} ${g.city}','${g.phone}')" class="flex-1 bg-green-600 text-white py-2 rounded-lg text-xs font-bold">Mitra Se Baat Karo</button>
+      <button onclick="window.open('tel:+91${g.phone}')" class="bg-black text-white px-3 py-2 rounded-lg text-xs">Call</button>
+      ${canDelete?`<button onclick="removeGadi(${i})" class="bg-red-600 text-white px-2 rounded text-xs">Del</button>`:''}
+    </div></div>`;
+ });
+ updateUI();
+}
+function openAdmin(){loginModal.classList.remove('hidden');}
+function closeAdmin(){loginModal.classList.add('hidden');}
+function checkLogin(){if(adminPass.value===ADMIN_PASSWORD){isAdmin=true; localStorage.setItem('isGaadiMitraAdmin','true'); closeAdmin(); loadGadi(); alert('GaadiMitra Admin Login');} else alert('Galat Password');}
+function logout(){isAdmin=false; localStorage.removeItem('isGaadiMitraAdmin'); loadGadi();}
+function updateUI(){adminPanel.classList.toggle('hidden',!isAdmin);}
+function addDriver(){
+ if(!isAdmin)return;
+ let n=dName.value.trim(), p=dPhone.value.trim(), c=dCity.value, t=dType.value, r=dRate.value.trim(), l=dLoc.value||c;
+ if(!n||!p||!r){alert('Bharo');return;}
+ let saved=JSON.parse(localStorage.getItem('gaadiMitraData')||'[]');
+ saved.unshift({city:c,type:t,name:n,phone:p,rate:r,loc:l});
+ localStorage.setItem('gaadiMitraData',JSON.stringify(saved));
+ dName.value=''; dPhone.value=''; dRate.value=''; loadGadi();
+}
+function book(g,p){let f=fromLoc.value||'Ballia', tt=toLoc.value||'Prayagraj'; window.open(`https://wa.me/91${p}?text=${encodeURIComponent(`GaadiMitra: ${g} chahiye From:${f} To:${tt}`)}`,'_blank')}
+function filterCity(c){document.querySelectorAll('.gadi-card').forEach(x=>x.style.display=(c==='all'||x.dataset.city===c)?'block':'none')}
+function search(){let f=fromLoc.value.toLowerCase(); if(f.includes('ballia'))filterCity('Ballia'); else if(f.includes('mau'))filterCity('Mau'); else if(f.includes('ghazipur'))filterCity('Ghazipur'); else if(f.includes('varanasi'))filterCity('Varanasi'); else if(f.includes('azamgarh'))filterCity('Azamgarh'); else if(f.includes('prayag'))filterCity('Prayagraj'); else filterCity('all')}
+function removeGadi(i){let s=JSON.parse(localStorage.getItem('gaadiMitraData')||'[]'); s.splice(i,1); localStorage.setItem('gaadiMitraData',JSON.stringify(s)); loadGadi();}
+loadGadi();
+</script>
+</body>
+</html>

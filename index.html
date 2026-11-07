@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GaadiMitra - 6 Jile Final - All Working</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+body{font-family:'Poppins',sans-serif;background:#f3f3f3}
+.hidden-field{display:none !important}
+</style>
+</head>
+<body class="pb-24">
+
+<div class="bg-white p-3 sticky top-0 z-40 flex justify-between items-center shadow">
+<div>
+<p class="text-[10px] text-gray-500 font-bold">✅ 6 Jile Me Kahi Se Bhi - Ballia | Mau | Ghazipur | Varanasi | Azamgarh | Prayagraj</p>
+<h1 class="font-bold text-[13px]">GaadiMitra <span class="bg-green-600 text-white px-2 rounded text-[9px]">FINAL ALL WORKING</span></h1>
+</div>
+<div class="flex gap-2"><button onclick="openPostModal()" class="bg-yellow-400 px-3 py-2 rounded-full font-bold text-[11px]">+ Gadi</button><button onclick="openAdmin()" class="bg-black text-white w-9 h-9 rounded-full text-xs"><i class="fas fa-lock"></i></button></div>
+</div>
+
+<div class="bg-black text-white p-2 text-center text-[10px] font-bold">1st FREE | 2nd Se 15% | UPI: <span class="text-yellow-400">shivamx1@ybl</span> | 7460807147 | Profit: ₹<span id="totalProfit">0</span></div>
+
+<div class="bg-white m-3 rounded-2xl p-3">
+<div class="flex gap-2 overflow-auto">
+<button onclick="filterGadi('all')" id="filterAll" class="bg-black text-white px-4 py-2 rounded-full text-xs font-bold">Sab - 6 Jile</button>
+<button onclick="filterGadi('sawari')" id="filterSawari" class="bg-gray-200 px-4 py-2 rounded-full text-xs font-bold">🚙 Sawari Koi bhi</button>
+<button onclick="filterGadi('chhoti')" id="filterChhoti" class="bg-gray-200 px-4 py-2 rounded-full text-xs font-bold">🛺 Chhoti Loader</button>
+<button onclick="filterGadi('badi')" id="filterBadi" class="bg-gray-200 px-4 py-2 rounded-full text-xs font-bold">🚛 Badi Loader</button>
+</div>
+</div>
+
+<div class="bg-white m-3 rounded-2xl p-4">
+<p class="font-bold text-sm mb-2">📍 6 Jile Me Kahi Se Bhi - Chahe Kahi Se Booking Aaye</p>
+<div class="grid grid-cols-2 gap-2">
+<select id="fromDistrict" class="border-2 border-green-500 p-3 rounded-xl text-sm font-bold"><option>Ballia</option><option>Mau</option><option>Ghazipur</option><option>Varanasi</option><option>Azamgarh</option><option>Prayagraj</option></select>
+<select id="toDistrict" class="border-2 border-blue-500 p-3 rounded-xl text-sm font-bold"><option>Ballia</option><option>Mau</option><option>Ghazipur</option><option>Varanasi</option><option>Azamgarh</option><option>Prayagraj</option></select>
+</div>
+<input id="fromLoc" list="allAreas" placeholder="Pickup - Ex: Rasra, Reoti, Ballia City - Kahi se bhi" class="w-full border p-3 rounded-xl text-sm mt-2">
+<input id="toLoc" list="allAreas" placeholder="Drop - Ex: Reoti, Bansdih, Sikandarpur - Ek hi jila bhi" class="w-full border p-3 rounded-xl text-sm mt-2">
+<datalist id="allAreas"><option value="Ballia City"><option value="Rasra"><option value="Reoti"><option value="Bansdih"><option value="Sikandarpur"><option value="Belthara Road"><option value="Chitbara"><option value="Maniyar"><option value="Bairia"><option value="Mau City"><option value="Ghosi"><option value="Kopaganj"><option value="Ghazipur City"><option value="Mohammadabad"><option value="Varanasi City"><option value="Azamgarh City"><option value="Prayagraj City"></datalist>
+<div id="samanMainBox" class="hidden-field"><input id="samanWeight" placeholder="Saman Kitna? Ex: 500kg" class="w-full border-2 border-orange-400 p-3 rounded-xl text-sm mt-2"></div>
+<button onclick="showRoute()" class="w-full bg-black text-white font-bold py-3 rounded-xl text-sm mt-3">Gaadi Dhoondo - 6 Jile Kahi Se Bhi</button>
+</div>
+
+<div id="gadiGrid" class="p-3 space-y-3"></div>
+
+<div id="bookingModal" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4"><div class="bg-white rounded-3xl w-full max-w-sm p-5"><h3 class="font-bold text-center" id="bookingTitle">Booking</h3><p id="bGadi" class="text-center text-xs text-gray-500 mt-1"></p><input id="custName" placeholder="Aapka Naam *" class="w-full border p-3 rounded-xl mt-3 text-sm"><input id="custPhone" placeholder="Aapka Mobile *" class="w-full border p-3 rounded-xl mt-2 text-sm"><input id="rideFare" type="number" placeholder="Fare Kitna? Ex: 500" class="w-full border-2 border-yellow-400 p-3 rounded-xl mt-2 text-sm"><div id="bookingSamanBox" class="hidden-field"><input id="bookingSaman" placeholder="Saman Details?" class="w-full border-2 border-orange-400 p-3 rounded-xl mt-2 text-sm"></div><p id="fareInfo" class="text-[11px] mt-2 p-2 rounded bg-gray-100"></p><div id="timerBox" class="hidden text-center mt-3"><p id="countdown" class="text-2xl font-bold text-red-600">10:00</p></div><button id="bookBtn" onclick="confirmBooking()" class="w-full bg-black text-white font-bold py-3 rounded-xl mt-4">Request Bhejo</button><button onclick="closeBooking()" class="w-full bg-gray-100 py-2 rounded-xl mt-2 text-sm">Band Karo</button></div></div>
+
+<div id="commissionPayModal" class="hidden fixed inset-0 bg-black/80 z-[60] flex items-center justify-center p-4 overflow-auto"><div class="bg-white rounded-3xl w-full max-w-sm p-5"><h3 class="font-bold text-center text-red-600">Commission - Pay Karo</h3><div id="commissionDetails" class="bg-red-50 border-2 border-red-500 rounded-xl p-3 mt-3 text-xs"></div><div class="bg-white border-2 border-gray-300 rounded-2xl p-4 mt-4 text-center"><p class="font-bold text-sm">Union Bank - QR Working</p><img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=upi://pay?pa=shivamx1@ybl&pn=Shivam&cu=INR" alt="QR" class="w-72 h-72 mx-auto mt-3 rounded-xl border-2"><p class="font-mono text-sm mt-3 font-bold">UPI: shivamx1@ybl</p><p class="font-mono text-sm font-bold">Mob: 7460807147</p><button onclick="openUPIApp()" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold mt-3">UPI App Se Pay Karo</button></div><p class="text-xs text-center mt-3">Pay: ₹<span id="payAmount" class="font-bold">0</span></p><button onclick="markCommissionPaidAndAutoStart()" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold mt-4">✅ Pay Kiya - Auto Start</button><button onclick="closeCommissionPay()" class="w-full bg-gray-100 py-2 rounded-xl mt-2 text-sm">Band Karo</button></div></div>
+
+<div id="driverTrackModal" class="hidden fixed inset-0 bg-white z-50 flex flex-col"><div class="bg-green-600 text-white p-4 flex justify-between"><p class="font-bold">Driver Live</p><button onclick="closeDriverTracking()" class="bg-white text-green-600 w-8 h-8 rounded-full">X</button></div><iframe id="driverMap" width="100%" height="250" style="border:0" src=""></iframe><div class="p-4"><div class="bg-green-100 p-3 rounded-xl text-xs"><p>Customer: <b id="dtCustName"></b> (<span id="dtCustPhone"></span>)</p><p id="dtFareInfo" class="font-bold mt-1"></p><p id="dtSamanInfo"></p></div><button id="startShareBtn" onclick="startDriverLiveShare()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold mt-3">Live Share Chalu</button><button id="stopShareBtn" onclick="stopDriverLiveShare()" class="hidden w-full bg-red-600 text-white py-3 rounded-xl font-bold mt-3">Stop</button><button onclick="callCustomer()" class="w-full bg-black text-white py-3 rounded-xl font-bold mt-2">Customer Ko Call</button><button onclick="completeRide()" class="w-full bg-yellow-400 text-black py-3 rounded-xl font-bold mt-2">✅ Ride Complete</button></div></div>
+
+<div id="customerTrackModal" class="hidden fixed inset-0 bg-white z-50 flex flex-col"><div class="bg-blue-600 text-white p-4 flex justify-between"><p class="font-bold">Customer Live</p><button onclick="closeCustomerTracking()" class="bg-white text-blue-600 w-8 h-8 rounded-full">X</button></div><iframe id="customerMap" width="100%" height="250" style="border:0" src=""></iframe><div class="p-4 overflow-auto"><div class="bg-yellow-100 p-3 rounded-xl text-xs"><p>Driver: <b id="ctDriverName"></b> (<span id="ctDriverPhone"></span>)</p><p>Gaadi: <b id="ctGaadiType"></b></p><p id="ctSamanRow">Saman: <b id="ctSaman"></b></p><p>Status: <b id="ctStatus"></b></p></div><button onclick="callDriver()" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold mt-3">Driver Ko Call</button><button onclick="cancelAndRebook()" class="w-full bg-red-600 text-white py-3 rounded-xl font-bold mt-2">Cancel Karke Dusri Book</button><div class="mt-3 bg-gray-50 p-3 rounded-xl text-xs"><p class="font-bold">Logs:</p><div id="trackingLogs"></div></div></div></div>
+
+<div id="postModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-end"><div class="bg-white w-full rounded-t-3xl p-5 max-h-[90vh] overflow-auto"><h3 class="font-bold">+ Gadi Post - 6 Jile Me Kahi Se Bhi + Koi bhi Gadi</h3><input id="dName" placeholder="Driver Naam" class="w-full border p-3 rounded-xl mt-3 text-sm"><input id="dPhone" placeholder="Mobile" class="w-full border p-3 rounded-xl mt-2 text-sm"><select id="dCity" class="w-full border-2 border-green-500 p-3 rounded-xl mt-2 text-sm font-bold"><option>Ballia</option><option>Mau</option><option>Ghazipur</option><option>Varanasi</option><option>Azamgarh</option><option>Prayagraj</option></select><input id="dArea" placeholder="Area? Ex: Rasra, Reoti, Bansdih, Ghosi - Kahi bhi" class="w-full border p-3 rounded-xl mt-2 text-sm"><select id="dType" class="w-full border p-3 rounded-xl mt-2 text-sm" onchange="checkOther()"><optgroup label="🚙 Sawari - Koi bhi - No Saman"><option>Bolero</option><option>Scorpio</option><option>Auto</option><option>Bike</option><option>Innova</option><option>E-Rickshaw</option><option>Swift Dzire</option><option>Creta</option><option>Brezza</option><option>Other - Dusri Sawari Gadi</option></optgroup><optgroup label="🛺 Chhoti Loader - Saman Yes"><option>Loader Auto</option><option>E-Rickshaw Loader</option><option>Tata Ace Chhota</option><option>Pickup 8ft</option><option>Other - Chhoti Loader</option></optgroup><optgroup label="🚚 Badi Loader - Saman Yes"><option>Pickup 14ft</option><option>Mini Truck</option><option>Eicher 14ft</option><option>Truck 20ft</option><option>Container 22ft</option><option>Other - Badi Loader</option></optgroup></select><div id="otherBox" class="hidden-field"><input id="dCustomType" placeholder="Gadi ka naam likho - Koi bhi Sawari Gadi" class="w-full border-2 border-blue-400 p-3 rounded-xl mt-2 text-sm"></div><input id="dCapacity" placeholder="Capacity? Ex: 7 seater / 500kg / 2 Ton" class="w-full border p-3 rounded-xl mt-2 text-sm"><button onclick="addPending()" class="w-full bg-yellow-400 font-bold py-3 rounded-xl mt-4">Post Karo - 6 Jile Working</button><button onclick="closePostModal()" class="w-full bg-gray-100 py-2 rounded-xl mt-2">Band</button></div></div>
+
+<div id="adminPanel" class="hidden fixed inset-0 bg-white z-[60] p-4 overflow-auto"><div class="flex justify-between"><h3 class="font-bold">Admin - 6 Jile Kahi Se Bhi</h3><button onclick="closeAdminPanel()" class="bg-gray-100 px-3 py-1 rounded">X</button></div><div class="bg-green-100 border-2 border-green-500 p-3 rounded-xl mt-4"><p class="font-bold text-sm">Profit: ₹<span id="adminTotalProfit">0</span> | Pending: ₹<span id="adminPending">0</span> | Bookings: <span id="bookingCount">0</span></p></div><div id="bookingList" class="mt-3 space-y-2"></div><button onclick="clearAll()" class="w-full bg-red-600 text-white p-2 rounded-xl mt-4 text-xs">Sab Clear</button><button onclick="logout()" class="w-full bg-black text-white p-3 rounded-xl mt-2">Logout</button></div>
+
+<div id="loginModal" class="hidden fixed inset-0 bg-black/70 z-[70] flex items-center justify-center p-4"><div class="bg-white p-6 rounded-2xl w-full max-w-sm"><input id="adminPass" type="password" placeholder="ballia123" class="w-full border p-3 rounded-xl"><button onclick="checkLogin()" class="w-full bg-yellow-400 font-bold py-3 rounded-xl mt-3">Login</button><button onclick="closeLogin()" class="w-full bg-gray-100 py-2 rounded-xl mt-2">Band</button></div></div>
+
+<script>
+const PASS="ballia123", COMMISSION_PERCENT=15, UPI_ID="shivamx1@ybl";
+let currentFilter='all', cur=null, timer=null, driverTrackInterval=null, currentTrackingId=null, pendingAttemptBookingId=null;
+let defaultGadi=[
+{city:'Ballia',type:'Bolero',category:'sawari',capacity:'7 seater',name:'Ramesh Ballia',phone:'9999999991',loc:'Ballia City',icon:'🚙'},
+{city:'Ballia',type:'Scorpio',category:'sawari',capacity:'7 seater',name:'Anil Rasra',phone:'9999999992',loc:'Rasra',icon:'🚘'},
+{city:'Ballia',type:'Auto',category:'sawari',capacity:'3 seater',name:'Sunil Reoti',phone:'9999999993',loc:'Reoti',icon:'🛺'},
+{city:'Mau',type:'Bolero',category:'sawari',capacity:'7 seater',name:'Mau Wala',phone:'9999999996',loc:'Mau City',icon:'🚙'},
+{city:'Ghazipur',type:'Bolero',category:'sawari',capacity:'7 seater',name:'Ghazipur Wala',phone:'9999999998',loc:'Ghazipur City',icon:'🚙'},
+{city:'Ballia',type:'Loader Auto',category:'chhoti',capacity:'500kg',name:'Rajesh Loader',phone:'9999999911',loc:'Ballia City',icon:'🛺'},
+{city:'Ballia',type:'Tata Ace Chhota',category:'chhoti',capacity:'750kg',name:'Mukesh Rasra',phone:'9999999913',loc:'Rasra',icon:'🚚'},
+{city:'Ballia',type:'Pickup 14ft',category:'badi',capacity:'2 Ton',name:'Pappu Reoti',phone:'9999999921',loc:'Reoti',icon:'🚚'},
+{city:'Ghazipur',type:'Truck 20ft',category:'badi',capacity:'10 Ton',name:'Sanjay Ghazipur',phone:'9999999925',loc:'Ghazipur City',icon:'🚛'},
+];
+const getBookings=()=>{try{return JSON.parse(localStorage.getItem('gaadiBookings')||'[]')}catch{return []}};
+const getCommissions=()=>{try{return JSON.parse(localStorage.getItem('gaadiCommissions')||'[]')}catch{return []}};
+const getApproved=()=>{try{return JSON.parse(localStorage.getItem('approvedGaadi')||'[]')}catch{return []}};
+function getDriverCompletedCount(p){return getCommissions().filter(c=>c.driverPhone===p).length}
+function getDriverUnpaidCommission(p){return getCommissions().filter(c=>c.driverPhone===p && c.status==='pending').reduce((s,c)=>s+c.commission,0)}
+function isDriverBlocked(p){return getDriverUnpaidCommission(p)>0}
+function showRoute(){let fd=document.getElementById('fromDistrict').value, td=document.getElementById('toDistrict').value, f=document.getElementById('fromLoc').value||fd, t=document.getElementById('toLoc').value||td; document.getElementById('googleMap').src=`https://www.google.com/maps?q=${encodeURIComponent(f+','+fd)}+to+${encodeURIComponent(t+','+td)}&z=11&output=embed`}
+function openUPIApp(){let amt=document.getElementById('payAmount').innerText||100; window.location.href=`upi://pay?pa=${UPI_ID}&pn=Shivam&am=${amt}&cu=INR`}
+function checkOther(){let t=document.getElementById('dType').value; if(t.includes('Other')) document.getElementById('otherBox').classList.remove('hidden-field'); else {document.getElementById('otherBox').classList.add('hidden-field'); document.getElementById('dCustomType').value=''}}
+function filterGadi(cat){currentFilter=cat; document.querySelectorAll('[id^=filter]').forEach(b=>b.className='bg-gray-200 px-4 py-2 rounded-full text-xs font-bold'); document.getElementById(cat==='all'?'filterAll':cat==='sawari'?'filterSawari':cat==='chhoti'?'filterChhoti':'filterBadi').className='bg-black text-white px-4 py-2 rounded-full text-xs font-bold'; let box=document.getElementById('samanMainBox'); if(cat==='chhoti'||cat==='badi') box.classList.remove('hidden-field'); else box.classList.add('hidden-field'); loadGadi()}
+function loadGadi(){
+ let bookings=getBookings(), approved=getApproved(), commissions=getCommissions();
+ let all=[...approved,...defaultGadi];
+ if(currentFilter==='sawari') all=all.filter(g=>g.category==='sawari');
+ else if(currentFilter==='chhoti') all=all.filter(g=>g.category==='chhoti');
+ else if(currentFilter==='badi') all=all.filter(g=>g.category==='badi');
+ let grid=document.getElementById('gadiGrid'); grid.innerHTML='';
+ all.forEach(g=>{
+   let completed=getDriverCompletedCount(g.phone), unpaid=getDriverUnpaidCommission(g.phone), isBlocked=unpaid>0, isFirstFree=completed===0;
+   grid.innerHTML+=`<div class="bg-white rounded-2xl p-4 shadow-sm"><div class="flex justify-between"><div class="flex gap-3"><div class="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center text-xl">${g.icon}</div><div><h3 class="font-bold text-sm">${g.type} - ${g.city} (${g.loc}) ${g.category!=='sawari'?`<span class="bg-orange-500 text-white px-2 rounded text-[9px]">${g.capacity}</span>`:''} ${isFirstFree?'<span class="bg-green-600 text-white px-2 rounded text-[9px]">1st FREE</span>':''} ${isBlocked?`<span class="bg-red-600 text-white px-2 rounded text-[9px]">BLOCKED ₹${unpaid}</span>`:''}</h3><p class="text-[11px] text-gray-500">📍 ${g.loc}, ${g.city} | ${g.name} | ${g.capacity} | 6 Jile Me Kahi Se Bhi</p></div></div><button onclick="${isBlocked?`showCommissionPayModal('${g.phone}','${g.name}',null)`:`openBooking('${g.phone}','${g.type} ${g.city}','${g.name}','${g.type}')`}" class="bg-${isBlocked?'red-600':'black'} text-white px-4 py-2 rounded-full text-xs font-bold">${isBlocked?'Pay':'Book'}</button></div></div>`;
+ });
+ let total=commissions.reduce((s,c)=>s+c.commission,0); document.getElementById('totalProfit').innerText=total; document.getElementById('adminTotalProfit').innerText=total; document.getElementById('adminPending').innerText=commissions.filter(c=>c.status==='pending').reduce((s,c)=>s+c.commission,0); document.getElementById('bookingCount').innerText=bookings.length;
+ document.getElementById('bookingList').innerHTML=bookings.map((b,i)=>`<div class="border p-3 rounded-xl text-xs mt-2"><b>${b.gadiType} - ${b.custName}</b><br>📍 ${b.from} → ${b.to} ${b.isIntraDistrict?'(Ek hi Jila)':'(Dusra Jila)'}<br>${b.category!=='sawari'?`Saman: ${b.saman}<br>`:''}Fare: ₹${b.fare} | Comm: ₹${b.commission} ${b.isFirstFree?'(FREE)':''}<br>${b.status}<div class="flex gap-1 mt-2"><button onclick="tryAcceptBooking(${i},'${b.gadiPhone}','${b.gadiName}')" class="bg-green-600 text-white px-2 py-1 rounded">Accept</button><button onclick="openDriverTracking(${i})" class="bg-blue-600 text-white px-2 py-1 rounded">Live</button><button onclick="openCustomerTrackingById(${b.id})" class="bg-yellow-500 text-black px-2 py-1 rounded">Customer Live</button><button onclick="cancelBooking(${i})" class="bg-red-600 text-white px-2 py-1 rounded">Cancel</button></div></div>`).join('')||'<p class="text-xs text-gray-400">Koi booking nahi</p>';
+}
+function openBooking(phone,type,driver,vehType){
+ if(isDriverBlocked(phone)){showCommissionPayModal(phone,driver,null); return;}
+ let completed=getDriverCompletedCount(phone), isFirstFree=completed===0;
+ let g=defaultGadi.find(x=>x.phone===phone) || getApproved().find(x=>x.phone===phone) || {capacity:'', category:'sawari'};
+ cur={phone,type,driver,vehType,capacity:g.capacity,category:g.category,isFirstFree};
+ document.getElementById('bGadi').innerText=type+' - '+driver+' - '+g.capacity+' - 6 Jile Kahi Se Bhi';
+ let box=document.getElementById('bookingSamanBox'); if(g.category!=='sawari'){box.classList.remove('hidden-field'); document.getElementById('bookingTitle').innerText='Booking - Loader Saman - 6 Jile'; document.getElementById('fareInfo').innerText=`🚚 Loader ${g.capacity} - Saman zaruri - ${isFirstFree?'1st FREE':'Dusri se 15% - UPI ${UPI_ID}'}`} else {box.classList.add('hidden-field'); document.getElementById('bookingTitle').innerText='Booking - Sawari Koi bhi No Saman - 6 Jile'; document.getElementById('fareInfo').innerText=`🚙 Sawari Koi bhi No Saman - ${isFirstFree?'1st FREE':'Dusri se 15% - UPI ${UPI_ID}'}`; document.getElementById('bookingSaman').value=''}
+ document.getElementById('bookingModal').classList.remove('hidden');
+}
+function showCommissionPayModal(driverPhone, driverName, attemptBookingId){
+ let unpaid=getCommissions().filter(c=>c.driverPhone===driverPhone && c.status==='pending'), total=unpaid.reduce((s,c)=>s+c.commission,0);
+ document.getElementById('payAmount').innerText

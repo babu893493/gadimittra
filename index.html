@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GaadiMitra - Loader + Sawari - Final</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+body{font-family:'Poppins',sans-serif;background:#f3f3f3}
+.blocked{border:2px solid #ef4444;background:#fef2f2}
+.free{border:2px solid #22c55e;background:#f0fdf4}
+.locked{border:2px solid #16a34a;background:#f0fdf4}
+.tracking{border:2px solid #3b82f6;background:#eff6ff}
+.loader{border:2px solid #f59e0b;background:#fffbeb}
+</style>
+</head>
+<body class="pb-24">
+
+<div class="bg-white p-3 sticky top-0 z-40 flex justify-between items-center shadow-sm">
+<div>
+<p class="text-[11px] text-gray-500">📍 Ballia | Mau | Ghazipur | Varanasi | Azamgarh | Prayagraj</p>
+<h1 class="font-bold text-[14px]">GaadiMitra <span class="bg-green-600 text-white px-2 rounded text-[9px]">LOADER + SAWARI FINAL</span></h1>
+</div>
+<div class="flex gap-2">
+<button onclick="openPostModal()" class="bg-yellow-400 px-3 py-2 rounded-full font-bold text-[11px]">+ Gadi Post</button>
+<button onclick="openAdmin()" class="bg-black text-white w-9 h-9 rounded-full text-xs"><i class="fas fa-lock"></i></button>
+</div>
+</div>
+
+<div class="bg-black text-white p-2 text-center text-[10px] font-bold">
+<span class="bg-green-500 px-2 py-0.5 rounded">1st FREE</span> 2nd Se 15% | Sawari + Loader Saman | UPI: <span class="text-yellow-400">shivamx1@ybl</span> | Mob: 7460807147 | Profit: ₹<span id="totalProfit">0</span>
+</div>
+
+<div id="liveBar" class="hidden bg-blue-600 text-white p-2 text-xs font-bold text-center"><span id="liveBarText"></span> <button onclick="openCustomerTracking()" class="bg-white text-blue-600 px-3 py-1 rounded-full ml-2">Live Dekho</button></div>
+
+<!-- CATEGORY FILTER - NAYA -->
+<div class="bg-white m-3 rounded-2xl p-3 shadow-sm">
+<p class="font-bold text-sm mb-2">🚛 Gaadi Type Chuno - Sawari + Saman</p>
+<div class="flex gap-2 overflow-auto">
+<button onclick="filterGadi('all')" id="filterAll" class="bg-black text-white px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">Sab Gadi</button>
+<button onclick="filterGadi('sawari')" id="filterSawari" class="bg-gray-200 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">🚙 Sawari</button>
+<button onclick="filterGadi('loader')" id="filterLoader" class="bg-yellow-400 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">🚚 Loader Saman</button>
+<button onclick="filterGadi('chhoti')" id="filterChhoti" class="bg-gray-200 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">🛺 Chhoti Loader</button>
+<button onclick="filterGadi('badi')" id="filterBadi" class="bg-gray-200 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">🚛 Badi Loader</button>
+</div>
+</div>
+
+<div class="bg-white m-3 rounded-2xl overflow-hidden shadow-sm">
+<div class="p-3 flex justify-between"><p class="font-bold text-sm">🗺️ Live Map - Sawari + Loader</p><button onclick="getCurrentLocation()" class="bg-black text-white px-3 py-1 rounded-full text-xs">My Location</button></div>
+<iframe id="googleMap" width="100%" height="180" style="border:0" src="https://www.google.com/maps?q=Ballia,Uttar+Pradesh&z=11&output=embed"></iframe>
+<div id="mapStatus" class="p-2 text-[11px] text-center bg-yellow-100">Sawari + Chhoti Badi Loader Saman Gadi - Har gadi live</div>
+</div>
+
+<div class="bg-white m-3 rounded-2xl p-4">
+<p class="font-bold mb-3 text-sm">📍 Pickup / Drop - Sawari + Loader Saman</p>
+<input id="fromLoc" placeholder="Pickup - Kaha Se? (Ghar / Dukaan / Godown)" class="w-full border p-3 rounded-xl text-sm">
+<input id="toLoc" placeholder="Drop - Kaha Tak?" class="w-full border p-3 rounded-xl text-sm mt-2">
+<input id="samanWeight" placeholder="Saman Kitna? Ex: 500kg / 2 Ton / Ghar ka saman (Loader ke liye)" class="w-full border border-yellow-400 p-3 rounded-xl text-sm mt-2">
+<button onclick="showRoute()" class="w-full bg-black text-white font-bold py-3 rounded-xl text-sm mt-3">Gaadi Dhoondo - Sawari + Loader</button>
+</div>
+
+<div id="gadiGrid" class="p-3 space-y-3"></div>
+
+<!-- BOOKING MODAL -->
+<div id="bookingModal" class="hidden fixed inset-0 bg-black/70 z-[60] flex items-center justify-center p-4">
+<div class="bg-white rounded-3xl w-full max-w-sm p-5">
+<h3 class="font-bold text-center">Booking - Sawari + Loader Saman</h3>
+<p id="bGadi" class="text-center text-xs text-gray-500 mt-1"></p>
+<input id="custName" placeholder="Aapka Naam *" class="w-full border p-3 rounded-xl mt-3 text-sm">
+<input id="custPhone" placeholder="Aapka Mobile *" class="w-full border p-3 rounded-xl mt-2 text-sm">
+<input id="rideFare" type="number" placeholder="Fare Kitna? Ex: 500" class="w-full border-2 border-yellow-400 p-3 rounded-xl mt-2 text-sm">
+<input id="bookingSaman" placeholder="Saman Details (Loader ke liye)" class="w-full border p-3 rounded-xl mt-2 text-sm">
+<p id="fareInfo" class="text-[11px] mt-2 p-2 rounded bg-gray-100"></p>
+<div id="timerBox" class="hidden text-center mt-3"><p id="countdown" class="text-2xl font-bold text-red-600">10:00</p></div>
+<button id="bookBtn" onclick="confirmBooking()" class="w-full bg-black text-white font-bold py-3 rounded-xl mt-4">Request Bhejo - Kaam Karega</button>
+<button onclick="closeBooking()" class="w-full bg-gray-100 py-2 rounded-xl mt-2 text-sm">Band Karo</button>
+</div>
+</div>
+
+<!-- COMMISSION MODAL -->
+<div id="commissionPayModal" class="hidden fixed inset-0 bg-black/85 z-[90] flex items-center justify-center p-4 overflow-auto">
+<div class="bg-white rounded-3xl w-full max-w-sm p-5">
+<h3 class="font-bold text-center text-red-600">💰 Commission Pending - Har Gadi</h3>
+<div id="commissionDetails" class="bg-red-50 border-2 border-red-500 rounded-xl p-3 mt-3 text-xs"></div>
+<div class="bg-white border-2 border-gray-300 rounded-2xl p-4 mt-4 text-center">
+<p class="font-bold text-sm">Union Bank - 4876 - Sawari + Loader</p>
+<img src="qr.jpg" onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=shivamx1@ybl'" class="w-64 h-64 mx-auto mt-3 rounded-xl border-2" alt="QR">
+<p class="font-mono text-sm mt-3 font-bold">UPI: shivamx1@ybl</p>
+<p class="font-mono text-sm font-bold">Mob: 7460807147</p>
+<button onclick="openUPIApp()" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold mt-3">UPI App Se Pay Karo</button>
+</div>
+<p class="text-xs text-center mt-3">Pay: ₹<span id="payAmount" class="font-bold">0</span></p>
+<button onclick="markCommissionPaidAndAutoStart()" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold mt-4">✅ Pay Kiya - Auto Start</button>
+<button onclick="closeCommissionPay()" class="w-full bg-gray-100 py-2 rounded-xl mt-2 text-sm">Band Karo</button>
+</div>
+</div>
+
+<!-- DRIVER LIVE -->
+<div id="driverTrackModal" class="hidden fixed inset-0 bg-white z-[80] flex flex-col">
+<div class="bg-green-600 text-white p-4 flex justify-between"><p class="font-bold">Driver Live - Sawari + Loader</p><button onclick="closeDriverTracking()" class="bg-white text-green-600 w-8 h-8 rounded-full">X</button></div>
+<iframe id="driverMap" width="100%" height="250" style="border:0" src=""></iframe>
+<div class="p-4">
+<div class="bg-green-100 p-3 rounded-xl text-xs">
+<p>Customer: <b id="dtCustName"></b> (<span id="dtCustPhone"></span>)</p>
+<p id="dtFareInfo" class="font-bold mt-1"></p>
+<p id="dtSamanInfo" class="font-bold"></p>
+<p>Live: <span id="dtYourLoc">Off</span></p>
+</div>
+<button id="startShareBtn" onclick="startDriverLiveShare()" class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold mt-3">Live Share Chalu Karo - Har Gadi</button>
+<button id="stopShareBtn" onclick="stopDriverLiveShare()" class="hidden w-full bg-red-600 text-white py-3 rounded-xl font-bold mt-3">Stop Sharing</button>
+<button onclick="callCustomer()" class="w-full bg-black text-white py-3 rounded-xl font-bold mt-2"><i class="fas fa-phone"></i> Customer Ko Call Karo</button>
+<button id="completeRideBtn" onclick="completeRide()" class="w-full bg-yellow-400 text-black py-3 rounded-xl font-bold mt-2">✅ Ride Complete Karo</button>
+</div>
+</div>
+
+<!-- CUSTOMER LIVE -->
+<div id="customerTrackModal" class="hidden fixed inset-0 bg-white z-[80] flex flex-col">
+<div class="bg-blue-600 text-white p-4 flex justify-between"><p class="font-bold">Live Tracking - Sawari + Loader Saman</p><button onclick="closeCustomerTracking()" class="bg-white text-blue-600 w-8 h-8 rounded-full">X</button></div>
+<iframe id="customerMap" width="100%" height="250" style="border:0" src=""></iframe>
+<div class="p-4 overflow-auto">
+<div class="bg-yellow-100 p-3 rounded-xl text-xs">
+<p>Driver: <b id="ctDriverName"></b> (<span id="ctDriverPhone"></span>)</p>
+<p>Gaadi: <b id="ctGaadiType"></b></p>
+<p>Pickup: <b id="ctPickup"></b></p>
+<p>Saman: <b id="ctSaman"></b></p>
+<p>Status: <b id="ctStatus"></b></p>
+<p>Live: <span id="ctDriverLoc">Wait...</span></p>
+</div>
+<button onclick="callDriver()" class="w-full bg-green-600 text-white py-3 rounded-xl font-bold mt-3"><i class="fas fa-phone"></i> Driver Ko Call Karo</button>
+<button onclick="cancelAndRebook()" class="w-full bg-red-600 text-white py-3 rounded-xl font-bold mt-2">Cancel Karke Dusri Book Karo</button>
+<div class="mt-3 bg-gray-50 p-3 rounded-xl text-xs"><p class="font-bold">Live Updates:</p><div id="trackingLogs" class="mt-2 space-y-1"></div></div>
+</div>
+</div>
+
+<!-- POST MODAL - LOADER GADI ADD -->
+<div id="postModal" class="hidden fixed inset-0 bg-black/60 z-50 flex items-end">
+<div class="bg-white w-full rounded-t-3xl p-5 max-h-[90vh] overflow-auto">
+<h3 class="font-bold">+ Gadi Post - Sawari + Loader Saman - Chhoti Badi</h3>
+<input id="dName" placeholder="Driver Naam" class="w-full border p-3 rounded-xl mt-3 text-sm">
+<input id="dPhone" placeholder="Mobile" class="w-full border p-3 rounded-xl mt-2 text-sm">
+<select id="dCity" class="w-full border p-3 rounded-xl mt-2 text-sm"><option>Ballia</option><option>Mau</option><option>Ghazipur</option><option>Varanasi</option><option>Azamgarh</option><option>Prayagraj</option></select>
+<select id="dType" class="w-full border p-3 rounded-xl mt-2 text-sm">
+<optgroup label="🚙 Sawari Gadi">
+<option>Bolero</option><option>Scorpio</option><option>Innova</option><option>Traveller</option><option>Auto</option><option>Bike</option><option>E-Rickshaw</option>
+</optgroup>
+<optgroup label="🛺 Chhoti Loader Saman - 500kg Tak">
+<option>Loader Auto</option><option>E-Rickshaw Loader</option><option>Tata Ace Chhota</option><option>Pickup 8ft</option>
+</optgroup>
+<optgroup label="🚚 Badi Loader Saman - 1 Ton Se 10 Ton">
+<option>Pickup 14ft</option><option>Mini Truck</option><option>Tata Ace Bada</option><option>Eicher 14ft</option><option>Eicher 17ft</option><option>Truck 20ft</option><option>Container 22ft</option><option>Dumper</option>
+</optgroup>
+</select>
+<input id="dCapacity" placeholder="Capacity Kitni? Ex: 500kg / 1 Ton / 5 Ton" class="w-full border border-yellow-400 p-3 rounded-xl mt-2 text-sm">
+<input id="dLoc" placeholder="Location - Kaha Khadi Hai?" class="w-full border p-3 rounded-xl mt-2 text-sm">
+<button onclick="addPending()" class="w-full bg-yellow-400 font-bold py-3 rounded-xl mt-4">Post Karo - Sawari + Loader</button>
+<button onclick="closePostModal()" class="w-full bg-gray-100 py-2 rounded-xl mt-2">Band Karo</button>
+</div>
+</div>
+
+<div id="adminPanel" class="hidden fixed inset-0 bg-white z-[70] p-4 overflow-auto">
+<div class="flex justify-between"><h3 class="font-bold">Admin - Sawari + Loader - Final</h3><button onclick="closeAdminPanel()" class="bg-gray-100 px-3 py-1 rounded">X</button></div>
+<div class="bg-green-100 border-2 border-green-500 p-3 rounded-xl mt-4">
+<p class="font-bold text-sm">💰 Profit: ₹<span id="adminTotalProfit">0</span> | Pending: ₹<span id="adminPending">0</span> | Paid: ₹<span id="adminPaid">0</span></p>
+<p class="text-xs">Bookings: <span id="bookingCount">0</span> | UPI: shivamx1@ybl | Sawari + Loader Saman</p>
+</div>
+<div class="bg-yellow-100 border-2 border-yellow-500 p-3 rounded-xl mt-4"><p class="font-bold text-sm">Live Bookings - Sawari + Chhoti Badi Loader - First Accept = Lock</p></div>
+<div id="bookingList" class="mt-3 space-y-2"></div>
+<button onclick="clearAll()" class="w-full bg-red-600 text-white p-2 rounded-xl mt-4 text-xs">Sab Clear</button>
+<button onclick="logout()" class="w-full bg-black text-white p-3 rounded-xl mt-2">Logout</button>
+</div>
+
+<div id="loginModal" class="hidden fixed inset-0 bg-black/70 z-[80] flex items-center justify-center p-4"><div class="bg-white p-6 rounded-2xl w-full max-w-sm"><h3 class="font-bold text-center mb-3">Admin Login</h3><input id="adminPass" type="password" placeholder="ballia123" class="w-full border p-3 rounded-xl"><button onclick="checkLogin()" class="w-full bg-yellow-400 font-bold py-3 rounded-xl mt-3">Login</button><button onclick="closeLogin()" class="w-full bg-gray-100 py-2 rounded-xl mt-2">Band</button></div></div>
+
+<script>
+const PASS="ballia123";
+const COMMISSION_PERCENT=15;
+const UPI_ID="shivamx1@ybl";
+const MOBILE_NO="7460807147";
+let currentFilter='all';
+let defaultGadi=[
+{city:'Ballia',type:'Bolero',category:'sawari',capacity:'7 seater',name:'Ramesh',phone:'9999999991',loc:'Ballia',icon:'🚙'},
+{city:'Mau',type:'Scorpio',category:'sawari',capacity:'7 seater',name:'Anil',phone:'9999999992',loc:'Mau',icon:'🚘'},
+{city:'Ghazipur',type:'Auto',category:'sawari',capacity:'3 seater',name:'Sunil',phone:'9999999993',loc:'Ghazipur',icon:'🛺'},
+{city:'Varanasi',type:'Bike',category:'sawari',capacity:'1 seater',name:'Vikash',phone:'9999999994',loc:'Varanasi',icon:'🏍️'},
+// LOADER CHHOTI - NAYI ADD
+{city:'Ballia',type:'Loader Auto',category:'chhoti',capacity:'500kg',name:'Rajesh Loader',phone:'9999999911',loc:'Ballia',icon:'🛺'},
+{city:'Mau',type:'E-Rickshaw Loader',category:'chhoti',capacity:'400kg',name:'Suresh Loader',phone:'9999999912',loc:'Mau',icon:'🛺'},
+{city:'Ghazipur',type:'Tata Ace Chhota',category:'chhoti',capacity:'750kg',name:'Mukesh Ace',phone:'9999999913',loc:'Ghazipur',icon:'🚚'},
+{city:'Varanasi',type:'Pickup 8ft',category:'chhoti',capacity:'1 Ton',name:'Amit Pickup',phone:'9999999914',loc:'Varanasi',icon:'🛻'},
+// LOADER BADI - NAYI ADD
+{city:'Azamgarh',type:'Pickup 14ft',category:'badi',capacity:'2 Ton',name:'Pappu Bada Pickup',phone:'9999999921',loc:'Azamgarh',icon:'🚚'},
+{city:'Prayagraj',type:'Mini Truck',category:'badi',capacity:'3 Ton',name:'Raju Mini Truck',phone:'9999999922',loc:'Prayagraj',icon:'🚛'},
+{city:'Ballia',type:'Eicher 14ft',category:'badi',capacity:'5 Ton',name:'Manoj Eicher',phone:'9999999923',loc:'Ballia',icon:'🚚'},
+{city:'Mau',type:'Eicher 17ft',category:'badi',capacity:'8 Ton',name:'Vijay Eicher',phone:'9999999924',loc:'Mau',icon:'🚛'},
+{city:'Ghazipur',type:'Truck 20ft',category:'badi',capacity:'10 Ton',name:'Sanjay Truck',phone:'9999999925',loc:'Ghazipur',icon:'🚛'},
+{city:'Varanasi',type:'Container 22ft',category:'badi',capacity:'12 Ton',name:'Rinku Container',phone:'9999999926',loc:'Varanasi',icon:'🚛'},
+];
+let cur=null, timer=null, driverTrackInterval=null, currentTrackingId=null, pendingAttemptBookingId=null;
+const getBookings=()=>JSON.parse(localStorage.getItem('gaadiBookings')||'[]');
+const getCommissions=()=>JSON.parse(localStorage.getItem('gaadiCommissions')||'[]');
+const getApproved=()=>JSON.parse(localStorage.getItem('approvedGaadi')||'[]');
+const getBlocked=()=>JSON.parse(localStorage.getItem('blockedPhones')||'[]');
+const getPending=()=>JSON.parse(localStorage.getItem('pendingGaadi')||'[]');
+function getDriverCompletedCount(p){return getCommissions().filter(c=>c.driverPhone===p).length;}
+function getDriverUnpaidCommission(p){return getCommissions().filter(c=>c.driverPhone===p && c.status==='pending').reduce((s,c)=>s+c.commission,0);}
+function isDriverBlocked(p){return getDriverUnpaidCommission(p)>0;}
+function showRoute(){let f=document.getElementById('fromLoc').value||'Ballia', t=document.getElementById('toLoc').value||'Mau'; document.getElementById('googleMap').src=`https://www.google.com/maps?q=${encodeURIComponent(f)}+to+${encodeURIComponent(t)}&z=11&output=embed`;}
+function getCurrentLocation(){if(navigator.geolocation){navigator.geolocation.getCurrentPosition(p=>{document.getElementById('googleMap').src=`https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}&z=15&output=embed`;});}}
+function openUPIApp(){let amt=document.getElementById('payAmount').innerText||100; window.location.href=`upi://pay?pa=${UPI_ID}&pn=GaadiMitra&am=${amt}&cu=INR`; }
+
+function filterGadi(cat){
+ currentFilter=cat;
+ document.querySelectorAll('[id^=filter]').forEach(b=>b.className='bg-gray-200 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap');
+ let active=document.getElementById(cat==='all'?'filterAll':cat==='sawari'?'filterSawari':cat==='loader'?'filterLoader':cat==='chhoti'?'filterChhoti':'filterBadi');
+ if(active) active.className='bg-black text-white px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap';
+ if(cat==='loader') currentFilter='loader-all';
+ loadGadi();
+}
+
+function loadGadi(){
+ let bookings=getBookings(), approved=getApproved(), blocked=getBlocked(), commissions=getCommissions();
+ let all=[...approved,...defaultGadi].filter(g=>!blocked.includes(g.phone));
+ if(currentFilter==='sawari') all=all.filter(g=>g.category==='sawari');
+ else if(currentFilter==='loader-all' || currentFilter==='loader') all=all.filter(g=>g.category!=='sawari');
+ else if(currentFilter==='chhoti') all=all.filter(g=>g.category==='chhoti');
+ else if(currentFilter==='badi') all=all.filter(g=>g.category==='badi');
+ let grid=document.getElementById('gadiGrid');
+ grid.innerHTML='';
+ all.forEach(g=>{
+   let completed=getDriverCompletedCount(g.phone);
+   let unpaid=getDriverUnpaidCommission(g.phone);
+   let isBlocked=unpaid>0;
+   let isFirstFree=completed===0;
+   let active=bookings.find(b=>b.gadiPhone===g.phone && b.status==='pending' && Date.now()<b.expiry);
+   let accepted=bookings.find(b=>b.lockedDriverPhone===g.phone && b.status==='accepted');
+   let tracking=bookings.find(b=>b.lockedDriverPhone===g.phone && b.status==='tracking');
+   let isLoader=g.category!=='sawari';
+   grid.innerHTML+=`<div class="bg-white rounded-2xl p-4 shadow-sm ${isBlocked?'blocked':''} ${isFirstFree?'free':''} ${accepted?'locked':''} ${tracking?'tracking':''} ${isLoader?'loader':''}"><div class="flex justify-between"><div class="flex gap-3"><div class="w-12 h-12 ${isBlocked?'bg-red-100':isLoader?'bg-orange-100':isFirstFree?'bg-green-100':'bg-yellow-100'} rounded-xl flex items-center justify-center text-xl">${g.icon}</div><div><h3 class="font-bold text-sm">${g.type} - ${g.city} ${isLoader?`<span class="bg-orange-500 text-white px-2 rounded text-[9px]">${g.capacity} ${g.category==='chhoti'?'Chhoti':'Badi'} Loader</span>`:''} ${isFirstFree?'<span class="bg-green-600 text-white px-2 rounded text-[9px]">1st FREE</span>':''} ${isBlocked?`<span class="bg-red-600 text-white px-2 rounded text-[9px]">BLOCKED ₹${unpaid}</span>`:''} ${active?'<span class="bg-red-600 text-white px-2 rounded text-[9px]">PENDING</span>':''} ${accepted?'<span class="bg-green-600 text-white px-2 rounded text-[9px]">ACCEPTED</span>':''} ${tracking?'<span class="bg-blue-600 text-white px-2 rounded text-[9px]">LIVE ON WAY</span>':''}</h3><p class="text-[11px] text-gray-500">📍 ${g.loc} | ${g.name} | ${g.capacity} | ${completed} ride</p>${isLoader?`<p class="text-[10px] text-orange-700 font-bold">🚚 Saman Loader - ${g.capacity} - Chhoti Badi sab</p>`:''}${tracking?`<p class="text-[10px] text-blue-600 font-bold">🚖 Live - ${tracking.custName} ke paas - ${tracking.saman||''}</p>`:''}</div></div><button onclick="${isBlocked?`showCommissionPayModal('${g.phone}','${g.name}',null)`:`openBooking('${g.phone}','${g.type} ${g.city}','${g.name}','${g.type}')`}" class="bg-${isBlocked?'red-600':'black'} text-white px-4 py-2 rounded-full text-xs font-bold h-fit">${isBlocked?'Pay':'Book'}</button></div>${tracking?`<button onclick="openCustomerTrackingById(${tracking.id})" class="w-full mt-3 bg-blue-600 text-white py-2 rounded-full text-xs font-bold">📍 Live Dekho - ${g.type} ${g.capacity}</button>`:''}</div>`;
+ });
+ let total=commissions.reduce((s,c)=>s+c.commission,0), pending=commissions.filter(c=>c.status==='pending').reduce((s,c)=>s+c.commission,0);
+ document.getElementById('totalProfit').innerText=total;
+ document.getElementById('adminTotalProfit').innerText=total;
+ document.getElementById('adminPending').innerText=pending;
+ document.getElementById('adminPaid').innerText=commissions.filter(c=>c.status==='paid').reduce((s,c)=>s+c.commission,0);
+ document.getElementById('bookingCount').innerText=bookings.length;
+ let live=bookings.find(b=>b.status==='tracking' || b.status==='accepted');
+ if(live){document.getElementById('liveBar').classList.remove('hidden'); document.getElementById('liveBarText').innerText=`🚖 ${live.lockedDriverName||live.gadiName} (${live.gadiType} ${live.capacity||''}) aa raha hai - ${live.isFirstFree?'1st FREE':''} - ${live.saman||''}`;} else document.getElementById('liveBar').classList.add('hidden');
+ document.getElementById('bookingList').innerHTML=bookings.map((b,i)=>`<div class="border p-3 rounded-xl text-xs mt-2 ${b.category!=='sawari'?'bg-orange-50 border-orange-300':''}"><b>${b.gadiType} ${b.capacity||''} - ${b.custName}</b><br>📍 ${b.from} → ${b.to}<br>Saman: ${b.saman||'Sawari'}<br>Fare: ₹${b.fare||0} | Commission: ₹${b.commission||0} ${b.isFirstFree?'(FREE)':''}<br>${b.status}<div class="flex gap-1 mt-2"><button onclick="tryAcceptBooking(${i},'${b.gadiPhone}','${b.gadiName}')" class="bg-green-600 text-white px-2 py-1 rounded">Accept</button><button onclick="openDriverTracking(${i})" class="bg-blue-600 text-white px-2 py-1 rounded">Live Chalu</button><button onclick="openCustomerTrackingById(${b.id})" class="bg-yellow-500 text-black px-2 py-1 rounded">Customer Live</button><button onclick="cancelBooking(${i})" class="bg-red-600 text-white px-2 py-1 rounded">Cancel</button></div></div>`).join('')||'<p class="text-xs text-gray-400">Koi booking nahi - Sawari + Loader sab khali</p>';
+}
+
+function openBooking(phone,type,driver,vehType){
+ if(isDriverBlocked(phone)){showCommissionPayModal(phone,driver,null); return;}
+ let completed=getDriverCompletedCount(phone);
+ let isFirstFree=completed===0;
+ let g=defaultGadi.find(x=>x.phone===phone) || getApproved().find(x=>x.phone===phone) || {type:vehType, capacity:'', category:'sawari'};
+ cur={phone,type,driver,vehType,capacity:g.capacity||'',category:g.category||'sawari',isFirstFree};
+ document.getElementById('bGadi').innerText=type+' - '+driver+' - '+(g.capacity||'')+' - '+(isFirstFree?'1st FREE':'2nd se Commission')+' - '+(g.category!=='sawari'?'Loader Saman':'Sawari');
+ document.getElementById('fareInfo').innerText=isFirstFree?`🎉 Pahli FREE - UPI ${UPI_ID} pe 0 - ${g.capacity||''}`:`Dusri se 15% - UPI ${UPI_ID} - ${g.capacity||''} - ${g.category!=='sawari'?'Loader Saman':''}`;
+ document.getElementById('bookingModal').classList.remove('hidden');
+}
+
+function showCommissionPayModal(driverPhone, driverName, attemptBookingId){
+ let unpaid=getCommissions().filter(c=>c.driverPhone===driverPhone && c.status==='pending');
+ let total=unpaid.reduce((s,c)=>s+c.commission,0);
+ document.getElementById('payAmount').innerText=total;
+ document.getElementById('commissionDetails').innerHTML=`<p class="font-bold">Driver: ${driverName} (${driverPhone}) - ${getDriverCompletedCount(driverPhone)} rides - Sawari + Loader</p><p>Total ₹${total} - UPI: ${UPI_ID} | Mob: ${MOBILE_NO}</p>`;
+ document.getElementById('commissionPayModal').classList.remove('hidden');
+ document.getElementById('commissionPayModal').dataset.driverPhone=driverPhone;
+ pendingAttemptBookingId=attemptBookingId;
+}
+
+function markCommissionPaidAndAutoStart(){
+ let driverPhone=document.getElementById('commissionPayModal').dataset.driverPhone;
+ let commissions=getCommissions();
+ commissions=commissions.map(c=>{if(c.driverPhone===driverPhone && c.status==='pending'){c.status='paid'; c.paidAt=Date.now();} return c;});
+ localStorage.setItem('gaadiCommissions',JSON.stringify(commissions));
+ closeCommissionPay();
+ loadGadi();
+ alert(`✅ Paid! UPI ${UPI_ID} - Ab auto start - Sawari + Loader`);
+ if(pendingAttemptBookingId){
+   let bookings=getBookings();
+   let idx=bookings.findIndex(b=>b.id===pendingAttemptBookingId);
+   if(idx!==-1){setTimeout(()=>{tryAcceptBooking(idx, driverPhone, 'Driver');}, 500);}
+   pendingAttemptBookingId=null;
+ }
+}
+
+function confirmBooking(){
+ try{
+ let name=document.getElementById('custName').value.trim();
+ let phone=document.getElementById('custPhone').value.trim();
+ let fare=parseInt(document.getElementById('rideFare').value)||500;
+ let saman=document.getElementById('bookingSaman').value.trim() || document.getElementById('samanWeight').value.trim() || '';
+ if(!name){alert('Naam bharo'); return;}
+ if(!phone){alert('Mobile bharo'); return;}
+ if(isDriverBlocked(cur.phone)){showCommissionPayModal(cur.phone,cur.driver,null); return;}
+ let from=document.getElementById('fromLoc').value||'Ballia';
+ let to=document.getElementById('toLoc').value||'Mau';
+ let bookings=getBookings();
+ let isFirstFree=cur.isFirstFree;
+ let commission=isFirstFree?0:Math.round(fare*COMMISSION_PERCENT/100);
+ let nb={id:Date.now(), gadiPhone:cur.phone, gadiType:cur.type, gadiName:cur.driver, vehType:cur.vehType, capacity:cur.capacity, category:cur.category, custName:name, custPhone:phone, from:from, to:to, saman:saman, fare:fare, commission:commission, earning:fare-commission, isFirstFree:isFirstFree, status:'pending', expiry:Date.now()+10*60*1000, lockedDriverPhone:null, lockedDriverName:null, driverLat:null, driverLng:null, logs:[`${new Date().toLocaleTimeString()} - Booking - ${cur.category!=='sawari'?'Loader Saman '+cur.capacity:'Sawari'} - Saman: ${saman} - ${isFirstFree?'1st FREE':'Dusri se'}`]};
+ bookings.unshift(nb);
+ localStorage.setItem('gaadiBookings',JSON.stringify(bookings));
+ document.getElementById('timerBox').classList.remove('hidden'); document.getElementById('bookBtn').classList.add('hidden'); startTimer(nb.expiry); loadGadi(); closeBooking();
+ alert(`✅ Booking Ho Gayi!\nGaadi: ${nb.gadiType} ${nb.capacity}\nType: ${nb.category!=='sawari'?'Loader Saman':'Sawari'}\nSaman: ${saman||'Sawari'}\nFare: ₹${fare}\n${isFirstFree?'FREE':'Commission ₹'+commission}\n\nDriver 10 min me Accept karega`);
+ }catch(e){alert('Booking error: '+e.message);}
+}
+
+function tryAcceptBooking(index, driverPhone, driverName){
+ if(isDriverBlocked(driverPhone)){let b=getBookings()[index]; showCommissionPayModal(driverPhone,driverName,b.id); return;}
+ let bookings=getBookings();
+ let b=bookings[index];
+ if(b.status!=='pending' || Date.now()>b.expiry){alert('Expire'); return;}
+ if(b.status==='accepted'||b.status==='tracking'){alert(`Ye ${b.lockedDriverName} ne LOCK kar li hai`); return;}
+ b.status='accepted'; b.lockedDriverPhone=driverPhone; b.lockedDriverName=driverName; b.lockedAt=new Date().toLocaleString(); b.logs.push(`${new Date().toLocaleTimeString()} - ${driverName} ne Accept kiya - ${b.category!=='sawari'?'Loader '+b.capacity:''} - First Lock`);
+ localStorage.setItem('gaadiBookings',JSON.stringify(bookings));
+ loadGadi();
+ openDriverTracking(index);
+ alert(`✅ LOCKED by ${driverName} - ${b.gadiType} ${b.capacity} - ${b.isFirstFree?'FREE':''} - Live Share karo`);
+}
+
+function openDriverTracking(index){
+ let b=getBookings()[index];
+ if(!b) return;
+ currentTrackingId=b.id;
+ document.getElementById('dtCustName').innerText=b.custName;
+ document.getElementById('dtCustPhone').innerText=b.custPhone;
+ document.getElementById('dtFareInfo').innerText=`${b.gadiType} ${b.capacity||''} - ${b.category!=='sawari'?'Loader Saman':''} - Fare ₹${b.fare} - Commission ₹${b.commission} ${b.isFirstFree?'(FREE)':''}`;
+ document.getElementById('dtSamanInfo').innerText=`Saman: ${b.saman||'Sawari'} - ${b.capacity||''}`;
+ document.getElementById('dtCommissionInfo').innerText=b.isFirstFree?`Pahli FREE - Agli se UPI ${UPI_ID}`:`Dusri se - UPI ${UPI_ID} - Pay karte hi auto start`;
+ document.getElementById('driverTrackModal').classList.remove('hidden');
+ document.getElementById('driverMap').src=`https://www.google.com/maps?q=${encodeURIComponent(b.from)}&z=13&output=embed`;
+}
+
+function startDriverLiveShare(){
+ let b=getBookings().find(x=>x.id===currentTrackingId);
+ if(!b) return;
+ b.status='tracking'; b.logs.push(`${new Date().toLocaleTimeString()} - Live Share Chalu - ${b.gadiType} ${b.capacity} - Sawari + Loader`);
+ localStorage.setItem('gaadiBookings',JSON.stringify(getBookings().map(x=>x.id===b.id?b:x)));
+ document.getElementById('startShareBtn').classList.add('hidden');
+ document.getElementById('stopShareBtn').classList.remove('hidden');
+ if(driverTrackInterval) clearInterval(driverTrackInterval);
+ driverTrackInterval=setInterval(()=>{
+   navigator.geolocation.getCurrentPosition(pos=>{
+     let bookings=getBookings(); let idx=bookings.findIndex(x=>x.id===currentTrackingId);
+     bookings[idx].driverLat=pos.coords.latitude; bookings[idx].driverLng=pos.coords.longitude;
+     localStorage.setItem('gaadiBookings',JSON.stringify(bookings));
+     document.getElementById('dtYourLoc').innerText=`${pos.coords.latitude.toFixed(5)}, ${pos.coords.longitude.toFixed(5)}`;
+     document.getElementById('driverMap').src=`https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}&z=15&output=embed`;
+     loadGadi();
+   });
+ }, 10000);
+ navigator.geolocation.getCurrentPosition(pos=>{
+   let bookings=getBookings(); let idx=bookings.findIndex(x=>x.id===currentTrackingId);
+   bookings[idx].driverLat=pos.coords.latitude; bookings[idx].driverLng=pos.coords.longitude;
+   localStorage.setItem('gaadiBookings',JSON.stringify(bookings));
+   document.getElementById('driverMap').src=`https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}&z=15&output=embed`;
+   loadGadi();
+ });
+}
+
+function stopDriverLiveShare(){if(driverTrackInterval) clearInterval(driverTrackInterval); document.getElementById('startShareBtn').classList.remove('hidden'); document.getElementById('stopShareBtn').classList.add('hidden');}
+function openCustomerTracking(){let b=getBookings().find(x=>x.status==='tracking'||x.status==='accepted'); if(b) openCustomerTrackingById(b.id); else alert('Koi live nahi');}
+function openCustomerTrackingById(id){
+ let b=getBookings().find(x=>x.id===id);
+ if(!b) return;
+ currentTrackingId=id;
+ document.getElementById('ctDriverName').innerText=b.lockedDriverName||b.gadiName;
+ document.getElementById('ctDriverPhone').innerText=b.lockedDriverPhone||b.gadiPhone;
+ document.getElementById('ctPickup').innerText=b.from;
+ document.getElementById('ctGaadiType').innerText=`${b.gadiType} ${b.capacity||''}`;
+ document.getElementById('ctSaman').innerText=b.saman||'Sawari';
+ document.getElementById('ctStatus').innerText=b.status==='tracking'?`🚖 ${b.gadiType} ${b.capacity} aa raha hai - ${b.category!=='sawari'?'Loader Saman':''} - Live`:`Accepted - ${b.gadiType}`;
+ document.getElementById('customerTrackModal').classList.remove('hidden');
+ if(b.driverLat){document.getElementById('customerMap').src=`https://www.google.com/maps?q=${b.driverLat},${b.driverLng}&z=15&output=embed`; document.getElementById('ctDriverLoc').innerText=`${b.driverLat.toFixed(5)}, ${b.driverLng.toFixed(5)}`;}
+ else document.getElementById('customerMap').src=`https://www.google.com/maps?q=${encodeURIComponent(b.from)}&z=13&output=embed`;
+ document.getElementById('trackingLogs').innerHTML=(b.logs||[]).slice().reverse().map(l=>`<p>• ${l}</p>`).join('');
+}
+
+function callDriver(){
+ try{
+ let b=getBookings().find(x=>x.id===currentTrackingId);
+ if(!b){alert('Booking nahi'); return;}
+ window.location.href=`tel:+91${b.lockedDriverPhone||b.gadiPhone}`;
+ }catch(e){alert('Call error: '+e.message);}
+}
+function callCustomer(){
+ try{
+ let b=getBookings().find(x=>x.id===currentTrackingId);
+ if(!b){alert('Booking nahi'); return;}
+ window.location.href=`tel:+91${b.custPhone}`;
+ }catch(e){alert('Call error: '+e.message);}
+}
+function cancelAndRebook(){let bookings=getBookings(); let idx=bookings.findIndex(x=>x.id===currentTrackingId); if(idx!==-1){bookings[idx].status='cancelled_by_customer'; localStorage.setItem('gaadiBookings',JSON.stringify(bookings));} closeCustomerTracking(); loadGadi(); alert('Cancel - Ab dusri book karo - Sawari + Loader');}
+function completeRide(){
+ let bookings=getBookings(); let idx=bookings.findIndex(x=>x.id===currentTrackingId); if(idx===-1) return;
+ let b=bookings[idx]; b.status='completed'; b.completedAt=Date.now();
+ localStorage.setItem('gaadiBookings',JSON.stringify(bookings));
+ let commissions=getCommissions();
+ commissions.unshift({id:Date.now(), driverPhone:b.lockedDriverPhone, driverName:b.lockedDriverName, gadiType:b.gadiType, capacity:b.capacity, category:b.category, custName:b.custName, fare:b.fare, commission:b.commission, earning:b.earning, isFirstFree:b.isFirstFree, status:b.commission===0?'paid':'pending', createdAt:Date.now(), bookingId:b.id});
+ localStorage.setItem('gaadiCommissions',JSON.stringify(commissions));
+ closeDriverTracking(); loadGadi();
+ if(b.isFirstFree){alert(`✅ 1st Ride Complete - FREE!\n${b.gadiType} ${b.capacity} - ${b.category!=='sawari'?'Loader Saman':''}\nFare: ₹${b.fare}\nAapko pura ₹${b.earning}\nAb dusri se 15% - UPI ${UPI_ID}`);} else {alert(`✅ Ride Complete - ${b.gadiType} ${b.capacity}\nCommission ₹${b.commission} pending - UPI ${UPI_ID} - Pay karte hi auto start`);}
+}
+function startTimer(expiry){
+ if(timer) clearInterval(timer);
+ timer=setInterval(()=>{
+   let diff=expiry-Date.now();
+   if(diff<=0){clearInterval(timer); document.getElementById('countdown').innerText='Expired'; let b=getBookings().map(x=>{if(x.expiry===expiry && x.status==='pending') x.status='expired'; return x;}); localStorage.setItem('gaadiBookings',JSON.stringify(b)); loadGadi(); closeBooking();}
+   else{let m=Math.floor(diff/60000), s=Math.floor((diff%60000)/1000); document.getElementById('countdown').innerText=`${m}:${s.toString().padStart(2,'0')}`;}
+ },1000);
+}
+function cancelBooking(i){let b=getBookings(); b.splice(i,1); localStorage.setItem('gaadiBookings',JSON.stringify(b)); loadGadi();}
+function clearAll(){if(confirm('Sab clear?')){localStorage.removeItem('gaadiBookings'); localStorage.removeItem('gaadiCommissions'); loadGadi();}}
+function openPostModal(){document.getElementById('postModal').classList.remove('hidden');}
+function closePostModal(){document.getElementById('postModal').classList.add('hidden');}
+function closeBooking(){document.getElementById('bookingModal').classList.add('hidden'); if(timer) clearInterval(timer); document.getElementById('timerBox').classList.add('hidden'); document.getElementById('bookBtn').classList.remove('hidden');}
+function closeCustomerTracking(){document.getElementById('customerTrackModal').classList.add('hidden'); if(driverTrackInterval) clearInterval(driverTrackInterval);}
+function closeDriverTracking(){document.getElementById('driverTrackModal').classList.add('hidden'); if(driverTrackInterval) clearInterval(driverTrackInterval);}
+function closeCommissionPay(){document.getElementById('commissionPayModal').classList.add('hidden');}
+function openAdmin(){document.getElementById('loginModal').classList.remove('hidden');}
+function closeLogin(){document.getElementById('loginModal').classList.add('hidden');}
+function closeAdminPanel(){document.getElementById('adminPanel').classList.add('hidden');}
+function checkLogin(){if(document.getElementById('adminPass').value===PASS){localStorage.setItem('isGaadiMitraAdmin','true'); closeLogin(); document.getElementById('adminPanel').classList.remove('hidden'); loadGadi();} else alert('Galat');}
+function logout(){localStorage.removeItem('isGaadiMitraAdmin'); closeAdminPanel();}
+function addPending(){
+ let n=document.getElementById('dName').value.trim(), p=document.getElementById('dPhone').value.trim(), c=document.getElementById('dCity').value, t=document.getElementById('dType').value, cap=document.getElementById('dCapacity').value.trim()||'1 Ton', l=document.getElementById('dLoc').value||c;
+ if(!n||!p){alert('Naam Mobile bharo');return;}
+ let category=t.includes('Loader')||t.includes('Tata')||t.includes('Pickup')||t.includes('Truck')||t.includes('Eicher')||t.includes('Container')||t.includes('Mini')||t.includes('Dumper')?(t.includes('8ft')||t.includes('Chhota')||t.includes('Auto')||t.includes('E-Rickshaw')?'chhoti':'badi'):'sawari';
+ let icon=category==='sawari'?'🚙':category==='chhoti'?'🛺':'🚚';
+ let pe=getPending();
+ pe.unshift({city:c,type:t,category:category,capacity:cap,name:n,phone:p,loc:l,icon:icon});
+ localStorage.setItem('pendingGaadi',JSON.stringify(pe));
+ closePostModal(); loadGadi();
+ alert(`✅ ${t} ${cap} - ${category==='sawari'?'Sawari':category==='chhoti'?'Chhoti Loader':'Badi Loader'} add ho gayi`);
+}
+loadGadi();
+</script>
+</body>
+</html>
